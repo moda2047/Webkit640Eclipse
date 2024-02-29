@@ -9,16 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.comstudy.myweb.model.CarDAO;
 import org.comstudy.myweb.model.CarDTO;
 
 public class ShopController extends HttpServlet {
-	static ArrayList<CarDTO> carList = new ArrayList<CarDTO>();
-	static {
-		carList.add(new CarDTO(101, "SONATA","HYUNDAI",2300,2022));
-		carList.add(new CarDTO(102, "BMW","BMW",5530,2020));
-		carList.add(new CarDTO(103, "K9","KIA",5330,2021));
-		carList.add(new CarDTO(104, "GRANDEUR","HYUNDAI",3330,2022));
-	}
+	static ArrayList<CarDTO> carList;
+	static CarDAO carDao = new CarDAO();
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -49,6 +45,7 @@ public class ShopController extends HttpServlet {
 		
 		switch(endPoint) {
 		case "list" : 
+			carList = (ArrayList<CarDTO>) carDao.selectAll();
 			System.out.println(carList);
 			req.setAttribute("carList", carList);
 			viewName = "list";
@@ -80,7 +77,7 @@ public class ShopController extends HttpServlet {
 			viewName = "modify";
 			break;
 		case "delete" : 
-			no = Integer.parseInt(req.getParameter("no"));				
+			no = Integer.parseInt(req.getParameter("no"));
 			// CarDTO에 equals와 hashCode가 재정의 되어야 한다. (자동 생성 가능)
 			index = carList.indexOf(new CarDTO(no));
 			if(index != -1) {
@@ -117,7 +114,8 @@ public class ShopController extends HttpServlet {
 		
 		switch(endPoint){
 		case "input" :
-			carList.add(new CarDTO(no, name, company, price, year));
+			//carList.add(new CarDTO(no, name, company, price, year));
+			carDao.insert(new CarDTO(no, name, company, price, year));
 			break;
 		case "modify" :
 			int index = carList.indexOf(new CarDTO(no));
